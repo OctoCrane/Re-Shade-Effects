@@ -20,7 +20,7 @@ uniform float2 Centre < __UNIFORM_COMBO_FLOAT2
 float3 ChromaticAbberation_Pass(float4 vpos : SV_Position, float2 texcoord : TexCoord) : SV_Target { 
     float3 screen = tex2D(ReShade::BackBuffer, texcoord);
 
-    float2 distance = clamp(texcoord - Centre, 0.0, sqrt(2));
+    float2 distance = clamp(texcoord - Centre, -sqrt(2), sqrt(2));
 
     float3 offsets = normalize(ColorOffsets);
     
