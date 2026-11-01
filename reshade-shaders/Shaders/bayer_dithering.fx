@@ -23,7 +23,6 @@ float3 Quantise(float3 color) {
     return floor(color * float(ColorsPerChannel - 1) + 0.5) / float(ColorsPerChannel - 1);
 }
 
-
 float3 BayerDithering_Pass(float4 vpos : SV_Position, float2 texcoord : TexCoord) : SV_Target {
     float3 colorInput = tex2D(ReShade::BackBuffer, texcoord).rgb;
     float depth = pow(tex2D(ReShade::DepthBuffer, texcoord).r,0.07);
