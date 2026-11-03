@@ -14,6 +14,14 @@ uniform int ColorsPerChannel <
     ui_min = 0; ui_max = 256;
 > = 3;
 
+uniform float BrightnessThreshold < __UNIFORM_SLIDER_FLOAT1
+    ui_min = 0.0; ui_max = 1.0;
+> = 0.3;
+
+uniform float DistanceThreshold < __UNIFORM_SLIDER_FLOAT1
+    ui_min = 0.0; ui_max = 1.0;
+> = 0.3;
+
 
 #include "ReShade.fxh"
 
@@ -28,11 +36,19 @@ float3 Quantise(float3 color) {
 float3 BlueNoiseDithering_Pass(float4 vpos : SV_POSITION, float2 texcoord : TexCoord) : SV_TARGET {
 
     float3 color = tex2D(ReShade::BackBuffer, texcoord).rgb;
-    float2 noisecoord = (texcoord * ReShade::ScreenSize)  / NoiseTexelSize;
+    float depth = pow(tex2D(ReShade::DepthBuffer, texcoord).r,0.07);
 
-    float3 noisecolor = tex2D(samplerNoise, noisecoord).rgb;
+    float greyscale = color.r * 0.21 + color.g * 0.72 + color.b * 0.07;
 
-    return Quantise(color + noisecolor * Intensity);
+    if (greyscale >= BrightnessThreshold || 1.0 - depth <= DistanceThreshold) {
+        float2 noisecoord = (texcoord * ReShade::ScreenSize)  / NoiseTexelSize;
+
+        float3 noisecolor = tex2D(samplerNoise, noisecoord).rgb;
+
+        return Quantise(color + noisecolor * Intensity);
+    }
+
+    return color;
 
 }
 
